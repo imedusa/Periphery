@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import dummy from "../../images/dummy.jpg"
+import { CartContext } from './Cart';
 
 
+const Items = ({album_id, album_name, artist, img_url, price, alb_type, quantity}) => {
 
-const Items = ({album_name, artist, img_url, price, alb_type}) => {
+    const {removeItem, increment, decrement} = useContext(CartContext);
 
   return (
     <>
@@ -16,9 +18,9 @@ const Items = ({album_name, artist, img_url, price, alb_type}) => {
         <p>{album_name}</p>
     </div>
     <div className='add-minus-quantity'>
-        <i className = "fas fa-minus"></i>
-        <input type = "text" placeholder = "1"/>
-        <i className = "fas fa-plus"></i>
+        <i className = "fas fa-minus" onClick = {() => decrement(album_id)}></i>
+        <input type = "text" placeholder = {quantity}/>
+        <i className = "fas fa-plus add" onClick = {() => increment(album_id)}></i>
     </div>
 
     <div className='price'>
@@ -26,7 +28,8 @@ const Items = ({album_name, artist, img_url, price, alb_type}) => {
     </div>
 
     <div className='remove-item'>
-        <i className = "fas fa-trash-alt add"></i>
+        <i className = "fas fa-trash-alt remove" 
+        onClick = {() => removeItem(album_id)}></i>
     </div>
 </div>
 <hr/>

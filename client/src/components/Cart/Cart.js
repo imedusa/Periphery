@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {createContext, useEffect, useReducer, useState} from 'react'
 import Items from './Items'
 import {Scrollbars} from 'react-custom-scrollbars-2'
 import arrow from "../../images/arrow.png"
@@ -6,11 +6,50 @@ import cart from "../../images/cart.png"
 import dummy from "../../images/dummy.jpg"
 import './Cart.css'
 import {products} from "./products"
+import ContextCart from './ContextCart'
+import { reducer } from './reducer'
 
+const initialState = {
+    item: products, 
+    totalAmount: 0,
+    totalItem: 0,
+}
+
+export const CartContext = createContext();
 
 const Cart = () => {
 
-    const [item, setItem] = useState(products);
+    // const [item, setItem] = useState(products);
+    const [state, dispatch] = useReducer(reducer, initialState);
+
+    const removeItem = (album_id) => {
+        return dispatch({
+            type: "REMOVE_ITEM",
+            payload: album_id,
+        })
+    }
+
+    // const clearCart = () => {
+    //     return dispatch({
+    //         type: "CLEAR_CART"
+    //     })
+    // }
+    const increment = (album_id) =>{
+        return dispatch({
+            type:"INCREMENT",
+            payload: album_id,
+        })
+    }
+
+    const decrement = (album_id) =>{
+        return dispatch({
+            type:"DECREMENT",
+            payload: album_id,
+        })
+    }
+    useEffect(() => {
+        dispatch ({type: "GET_TOTAL"})
+    }, [state.item]);
 
 
     const name = products?.album_name ?? "";
@@ -19,46 +58,11 @@ const Cart = () => {
     const price = products?.price ?? "";
 
 
-
-
   return (
       <>
-      <header>
-          <div className="continue-shopping">
-              <img src = {arrow} alt = "arrow" className = "arrow-icon"/>
-              <h3>Continue Shopping</h3>
-
-          </div>
-          <div className='cart-icon'>
-              <img src = {cart} alt = "cart"/>
-              <p>1</p>
-          </div>
-      </header>
-      <section className='main-cart-section'>
-          <h1>Periphery Shopping Cart</h1>
-          <p className='total-items'>You have <span className='total-items-count'>1</span> items in your shopping cart.</p>
-
-          <div className='cart-items'>
-              <div className='cart-tems-container'>
-                  <Scrollbars style={{width: 800, height: 500}}>
-
-                      {
-                          item.map((curItem) => {
-                              return <Items key = {curItem.album_id}{...curItem}/>
-                          })
-                      }
-                  </Scrollbars>
-              </div>
-          </div>
-
-        <div>
-            <div className='card-total'>
-                <h3>Cart Total: <span>Rs.350</span></h3>
-                <button>Check Out</button>
-            </div>
-        </div>
-
-      </section>
+      <CartContext.Provider value = {{...state, removeItem, increment, decrement}}>
+          <ContextCart/>
+      </CartContext.Provider>
       </>
     
   )
